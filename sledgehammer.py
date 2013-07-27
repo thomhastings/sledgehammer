@@ -58,8 +58,8 @@ def main():
             pwd_infile.seek(0);
         '''
         for x in itertools.product(uname_infile, pwd_infile):
-            print x
-        '''
+            try_credentials(x[0].rstrip(), x[1].rstrip())
+        ''' 
 
 
 if __name__ == '__main__':
