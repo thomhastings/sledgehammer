@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 '''
-Filename:        brute.py
+Filename:        sledgehammer.py
 Author:            Phil Grohe
 
 Description:
-HTTP login brute forcing tool
+HTTP login dicionary attack / brute forcing tool
 '''
 
 import argparse
@@ -14,7 +14,7 @@ import urlparse
 import requests
 
 def cmd_line_args():
-    parser = argparse.ArgumentParser(description="Brute force HTTP login credentials")
+    parser = argparse.ArgumentParser(description="Dictionary Attack / Brute force HTTP login credentials")
     parser.add_argument("-t", "--target", type=str, required=True, dest="target")
     parser.add_argument("-d", "--dictionary", type=str, required=True, dest="dict_file")
     return parser.parse_args()
