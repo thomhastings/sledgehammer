@@ -1,0 +1,44 @@
+Notes
+
+Do you provide a username to the tool and it tries different passwords,  or does it try usernames and passwords from the dictionary files?
+    -Both, different modes.
+
+
+
+itertools.product VS. Nested for loop profiling
+
+Both tested with 500 worst passwords file as usernames and passwords.
+File from here:
+http://www.skullsecurity.org/wiki/index.php/Passwords
+
+Both times try_credentials was just stub that prints to console   
+
+Using itertools.product
+        783721 function calls (782683 primitive calls) in 16.953 seconds
+
+        810.643 when tested against VM with full implementation of try_credentials
+
+Using nested for/in
+        534721 function calls (533683 primitive calls) in 16.933 seconds
+
+        838.779 when tested against VM with full implementation of try_credentials
+
+
+Problem with max retries / socket error:
+
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='owaspbwa', port=80): Max retries exceeded with url: /WebGoat/attack (Caused by <class 'socket.error'>: [Errno 99] Cannot assign requested address)
+
+This error would occur during runs with long word lists.  Short word lists that completed quickly would not experience it.
+
+The exception messages are not actually very clear on this and it left me confused as to the cause. It occured to me that the server might just be rejecting my connections.  But throttling my requests didn't solve the issue.
+
+After further searching I found this in the requests module's documentation:
+
+
+"Excellent news — thanks to urllib3, keep-alive is 100% automatic within a session! Any requests that you make within a session will automatically reuse the appropriate connection!
+
+Note that connections are only released back to the pool for reuse once all body data has been read; be sure to either set stream to False or read the content property of the Response object."
+
+I believe that since I'm not actually reading the content of the Request object the connections are not actually bein returned to the connection pool and I'm exhausting the number of connections in the connection pool.
+
+Adding an HTTP header of 'Connection: close' to the request prevented the error from occuring.

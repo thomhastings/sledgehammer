@@ -2,3 +2,4 @@ apple
 orange
 dog
 cat
+guest
