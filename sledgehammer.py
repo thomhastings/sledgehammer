@@ -45,11 +45,7 @@ def try_credentials(target_url, username, password):
 
     '''Without the Connection: Close header, the program crashed on an exception from the requests module.'''
 
-    try:
-        response = requests.get(target_url, auth=(username, password), headers={'Connection': 'close'})
-    except requests.exceptions.ConnectionError:
-        sleep(5)
-        response = requests.get(target_url, auth=(username, password), headers={'Connection': 'close'})
+    response = requests.get(target_url, auth=(username, password), headers={'Connection': 'close'})
 
     if response.status_code == 200:
         msg = msg + "\t\t\tSuccess\t[Status Code: %s]" % (response.status_code)
