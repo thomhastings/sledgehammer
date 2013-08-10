@@ -1,5 +1,8 @@
 Notes
 
+Initial Version Notes
+---------------------
+
 Do you provide a username to the tool and it tries different passwords,  or does it try usernames and passwords from the dictionary files?
     -Both, different modes.
 
@@ -42,3 +45,68 @@ Note that connections are only released back to the pool for reuse once all body
 I believe that since I'm not actually reading the content of the Request object the connections are not actually bein returned to the connection pool and I'm exhausting the number of connections in the connection pool.
 
 Adding an HTTP header of 'Connection: close' to the request prevented the error from occuring.
+
+
+Adding Threading for HTTP requests
+==================================
+
+Do I need to join my threads? 
+
+Am I doing any processing in the *main* thread that requires me to wait for them all to finish so I can do operations / evaluations on there results?
+
+    Don't think so.  The function being run in the threads does all the evaluation internally (good creds or not) and I don't think anything needs to be done after they finish.  Just fire them off and the program will end once all the dictionary words have been tried.
+
+    See http://stackoverflow.com/questions/3088449/explicit-joining-of-python-threads?rq=1
+
+Should I limit the number of threads? Like some kind of thread pool?
+
+    I think this isn't necessary.  As each HTTP request completes and the threaded function ends, that thread dies.  So as I create new ones, the older finished ones have ended.  Maybe there's a start up cost of creating threads that can be avoided by using a pool.  Will have to look into this further.
+
+Use multiple threads to read from the word list as well as to make the HTTP requests?  Am I not I/O bound on the file reading itself as well as the network I/O of the HTTP requests?
+
+    Have found conflicting info on whether having multiple threads reading from the file is actually a benefit.  Some stackoverflow posts suggest that it might actually be detrimental:
+
+    1st comment on original question here http://stackoverflow.com/questions/9175914/reading-a-single-file-from-multiple-threads-in-python
+
+    http://stackoverflow.com/questions/17972007/in-c-how-to-read-one-file-with-multiple-threads
+
+    Honestly, I think this is adding unnecessary complexity to this iteration of the program.  If anything I should consider pre-caching the whole word list into memory rather than doing a readline() each go around.
+
+    Will probably go with main thread feeding data into a Queue and consumer threads doing the requests and evaluating the responses.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
