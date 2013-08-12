@@ -15,8 +15,6 @@ from utils import prefix_print
 from utils import abort_on_missing_file
 from core import LoginThread
 
-
-
 def main():
     args = cmd_line_args()
 
@@ -33,7 +31,12 @@ def main():
 
     thread_pool = [LoginThread(args.target, credential_queue, result_queue) for i in range(args.threads)]
 
-    #make a big list of username / pass tuples rather than reading from file and then passing one at a time to threads
+    #Fill up Queue with username, password tuples
+    #I decided to fully load the Queue before starting the threads.
+    #Might be better to have the threads running and consuming data as
+    #the Queue is being loaded.  My worry was that the worker threads
+    #would consume data from the Queue faster than the file I/O operations
+    #could fill it and the threads would just be waiting on the file I/O
     with open(args.usernames_file) as uname_infile, open(args.passwords_file,
         'r') as pwd_infile:
 
@@ -53,26 +56,6 @@ def main():
         prefix_print("Valid Credentials: %s, %s" % (username, password))
     else:
         prefix_print("No valid credentials found.")
-
-
-    '''
-        if(try_credentials(args.target, x[0].rstrip(), x[1].rstrip())):
-            break
-
-    Alternate method to combine each username in the 
-    username file with each password in the password file.
-
-    itertools was ~28 seconds faster on 500 usernames x 500 passwords.
-
-    for uname in uname_infile:
-        cur_uname = uname.rstrip()
-        for pwd in pwd_infile:
-            cur_pwd = pwd.rstrip()
-            if(try_credentials(args.target, cur_uname, cur_pwd)):
-                break
-        pwd_infile.seek(0);
-
-    ''' 
 
 if __name__ == '__main__':
     main()
