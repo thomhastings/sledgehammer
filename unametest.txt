@@ -1,5 +1,5 @@
 red
 blue
-guest1
+guest
 green
 yellow
